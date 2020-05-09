@@ -1,0 +1,29 @@
+{
+  "name": "services",
+  "version": "0.0.1",
+  "description": "services for myself",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/igoist/nodejs-usecase.git"
+  },
+  "keywords": [
+    "igoist"
+  ],
+  "author": "igoist",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/igoist/nodejs-usecase/issues"
+  },
+  "homepage": "https://github.com/igoist/nodejs-usecase#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "koa": "^2.11.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^8.0.8",
+    "request": "^2.88.2"
+  }
+}
