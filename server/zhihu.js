@@ -11,7 +11,7 @@ const tmpTS = +time;
 const handleDate = () => {
   let y = time.getYear() + 1900;
   let m = time.getMonth() + 1;
-  let d = time.getDate() + 1;
+  let d = time.getDate();
 
   if (m < 10) {
     m = '0' + m;
@@ -40,57 +40,73 @@ let getData = () => {
         method: 'GET'
       },
       function (error, response, body) {
-        log('here error: ', error);
+        if (error) {
+          log('here error: ', error);
+        }
         resolve(body);
       }
     );
   });
 };
 
-let objs = [];
-
-const handleFile = (fileName, resultName) => {
-  fs.readFile(fileName, 'utf8', (err, data) => {
-    if (err) throw err;
-    let $ = cheerio.load(data);
-
-    let el = $('script#js-initialData')[0];
-    let obj = JSON.parse(el.children[0].data);
-    let hotList = obj.initialState.topstory.hotList;
-    hotList.map((item, i) => {
-      let t = item.target;
-      let title = t.titleArea.text;
-      let excerpt = t.excerptArea.text;
-      let link = t['link']['url'];
-      let img = t['imageArea']['url'];
-
-      objs.push({
-        title,
-        excerpt,
-        link,
-        img
-      });
-    });
-
-    let tmpFileName = resultName || 'data/test.json';
-
-    fs.writeFile(tmpFileName, JSON.stringify(objs, null, 2), (err) => {
-      if (err) throw err;
-      console.log(`The file ${tmpFileName} has been saved!`);
+const writeFile = (fileName, data) => {
+  return new Promise((resolve) => {
+    fs.writeFile(fileName, data, (err) => {
+      if (err) {
+        log(`write ${fileName} failed:`, err);
+        resolve(false);
+      }
+      console.log(`The file ${fileName} has been saved!`);
+      resolve(true);
     });
   });
 };
 
-const writeAndHandle = (res) => {
-  return Promise((resolve) => {
-    fs.writeFile(fileName, res, (err) => {
-      if (err) throw err;
-      console.log(`The file ${fileName} has been saved!`);
-      try {
-        handleFile(fileName, fileName2);
-      } catch (err) {
-        console.log('err when handleFile: ', err);
+const readFile = (fileName, fileType) => {
+  return new Promise((resolve) => {
+    fs.readFile(fileName, fileType, (err, data) => {
+      if (err) {
+        log(`readFile ${fileName} failed: `, err);
+        resolve(false);
       }
+      resolve(data);
+    });
+  });
+};
+
+let objs = [];
+
+const handleFile = (fileName, resultName) => {
+  return new Promise((resolve) => {
+    fs.readFile(fileName, 'utf8', async (err, data) => {
+      if (err) {
+        log(`readFile ${fileName} failed in handleFile: `, err);
+        resolve(false);
+      }
+      let $ = cheerio.load(data);
+
+      let el = $('script#js-initialData')[0];
+      let obj = JSON.parse(el.children[0].data);
+      let hotList = obj.initialState.topstory.hotList;
+      hotList.map((item, i) => {
+        let t = item.target;
+        let title = t.titleArea.text;
+        let excerpt = t.excerptArea.text;
+        let link = t['link']['url'];
+        let img = t['imageArea']['url'];
+
+        objs.push({
+          title,
+          excerpt,
+          link,
+          img
+        });
+      });
+
+      let tmpFileName = resultName || 'data/test.json';
+
+      let res = await writeFile(tmpFileName, JSON.stringify(objs, null, 2));
+      resolve(res);
     });
   });
 };
@@ -98,22 +114,33 @@ const writeAndHandle = (res) => {
 const getZhihuData = async () => {
   let res = await getData();
 
-  await writeAndHandle(res);
+  let ifWriteSuccess = await writeFile(fileName, res);
+  if (!ifWriteSuccess) {
+    return false;
+  }
+
+  let ifHandleSuccess = await handleFile(fileName, fileName2);
+  if (!ifHandleSuccess) {
+    return false;
+  }
+
+  return true;
 };
 
-const sth = (callback) => {};
+const getZhihuDataForApi = async () => {
+  let fileData = await readFile(fileName2, 'utf8');
 
-const getZhihuDataForApi = () => {
-  return new Promise((resolve) => {
-    fs.readFile(fileName2, 'utf8', (err, data) => {
-      if (err) {
-        sth((res) => {
-          resolve(JSON.parse(data));
-        });
-      }
-      // resolve(JSON.parse(data));
-    });
-  });
+  if (!fileData) {
+    let ifGet = await getZhihuData();
+
+    if (!ifGet) {
+      return [];
+    }
+
+    fileData = await readFile(fileName2, 'utf8');
+  }
+
+  return JSON.parse(fileData);
 };
 
 // only for local test

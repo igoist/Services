@@ -21,17 +21,12 @@ router.get('/', async (ctx) => {
 });
 
 router.get('/Info/:id', async (ctx) => {
-  // log(zhihu);
-  // log(zhihu.getZhihuData);
-  // log(zhihu.getZhihuDataForApi);
-  // console.log(data);
-  await zhihu.getZhihuDataForApi();
-  ctx.body = ctx.params;
-  // let data = await zhihu.getZhihuDataForApi();
-  // ctx.body = {
-  //   Code: 0,
-  //   list: data
-  // };
+  let data = await zhihu.getZhihuDataForApi();
+  // ctx.body = ctx.params;
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
 });
 
 app.use(Cors());
