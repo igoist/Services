@@ -2,8 +2,10 @@ const log = console.log.bind(this);
 
 const request = require('request');
 const cheerio = require('cheerio');
-const fs = require('fs');
 const path = require('path');
+const utils = require('./utils');
+
+const { readFile, writeFile } = utils.file;
 
 let time;
 let tmpTS;
@@ -56,65 +58,36 @@ let getData = () => {
   });
 };
 
-const writeFile = (fileName, data) => {
-  return new Promise((resolve) => {
-    fs.writeFile(fileName, data, (err) => {
-      if (err) {
-        log(`write ${fileName} failed:`, err);
-        resolve(false);
-      }
-      console.log(`The file ${fileName} has been saved!`);
-      resolve(true);
-    });
-  });
-};
-
-const readFile = (fileName, fileType) => {
-  return new Promise((resolve) => {
-    fs.readFile(fileName, fileType, (err, data) => {
-      if (err) {
-        log(`readFile ${fileName} failed: `, err);
-        resolve(false);
-      }
-      resolve(data);
-    });
-  });
-};
-
 const handleFile = (fileName, resultName) => {
-  return new Promise((resolve) => {
-    fs.readFile(fileName, 'utf8', async (err, data) => {
-      if (err) {
-        log(`readFile ${fileName} failed in handleFile: `, err);
-        resolve(false);
-      }
-      // we should reset objs every time
-      let objs = [];
-      let $ = cheerio.load(data);
+  return new Promise(async (resolve) => {
+    let fileData = await readFile(fileName, 'utf8');
 
-      let el = $('script#js-initialData')[0];
-      let obj = JSON.parse(el.children[0].data);
-      let hotList = obj.initialState.topstory.hotList;
-      hotList.map((item, i) => {
-        let t = item.target;
-        let title = t.titleArea.text;
-        let excerpt = t.excerptArea.text;
-        let link = t['link']['url'];
-        let img = t['imageArea']['url'];
+    // we should reset objs every time
+    let objs = [];
+    let $ = cheerio.load(fileData);
 
-        objs.push({
-          title,
-          excerpt,
-          link,
-          img
-        });
+    let el = $('script#js-initialData')[0];
+    let obj = JSON.parse(el.children[0].data);
+    let hotList = obj.initialState.topstory.hotList;
+    hotList.map((item, i) => {
+      let t = item.target;
+      let title = t.titleArea.text;
+      let excerpt = t.excerptArea.text;
+      let link = t['link']['url'];
+      let img = t['imageArea']['url'];
+
+      objs.push({
+        title,
+        excerpt,
+        link,
+        img
       });
-
-      let tmpFileName = resultName || 'data/test.json';
-
-      let res = await writeFile(tmpFileName, JSON.stringify(objs, null, 2));
-      resolve(res);
     });
+
+    let tmpFileName = resultName || 'data/test.json';
+
+    let res = await writeFile(tmpFileName, JSON.stringify(objs, null, 2));
+    resolve(res);
   });
 };
 
