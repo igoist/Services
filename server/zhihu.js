@@ -5,8 +5,8 @@ const cheerio = require('cheerio');
 const fs = require('fs');
 const path = require('path');
 
-let time = new Date();
-const tmpTS = +time;
+let time;
+let tmpTS;
 
 const handleDate = () => {
   let y = time.getYear() + 1900;
@@ -23,8 +23,15 @@ const handleDate = () => {
   return `${y}-${m}-${d}`;
 };
 
-const fileName = path.resolve(__dirname, `../tmps/tmp-${tmpTS}.html`);
-const fileName2 = path.resolve(__dirname, `../data/data-${handleDate()}.json`);
+let fileName;
+let fileName2;
+
+const updateTime = () => {
+  time = new Date();
+  tmpTS = +time;
+  fileName = path.resolve(__dirname, `../tmps/tmp-${tmpTS}.html`);
+  fileName2 = path.resolve(__dirname, `../data/data-${handleDate()}.json`);
+};
 
 let getData = () => {
   let uri = 'https://www.zhihu.com/billboard';
@@ -74,8 +81,6 @@ const readFile = (fileName, fileType) => {
   });
 };
 
-let objs = [];
-
 const handleFile = (fileName, resultName) => {
   return new Promise((resolve) => {
     fs.readFile(fileName, 'utf8', async (err, data) => {
@@ -83,6 +88,8 @@ const handleFile = (fileName, resultName) => {
         log(`readFile ${fileName} failed in handleFile: `, err);
         resolve(false);
       }
+      // we should reset objs every time
+      let objs = [];
       let $ = cheerio.load(data);
 
       let el = $('script#js-initialData')[0];
@@ -128,6 +135,9 @@ const getZhihuData = async () => {
 };
 
 const getZhihuDataForApi = async () => {
+  // !!!!!!
+  updateTime();
+
   let fileData = await readFile(fileName2, 'utf8');
 
   if (!fileData) {

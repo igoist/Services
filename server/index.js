@@ -20,7 +20,7 @@ router.get('/', async (ctx) => {
   };
 });
 
-router.get('/Info/:id', async (ctx) => {
+router.get('/api/v1/list/:id', async (ctx) => {
   let data = await zhihu.getZhihuDataForApi();
   // ctx.body = ctx.params;
   ctx.body = {
