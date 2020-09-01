@@ -8,15 +8,20 @@ const app = new Koa();
 const router = new Router();
 const port = 6085;
 
+let tmpItem = {
+  id: 0,
+  title: '知乎'
+};
+let tmpArr = [];
+
+for (i = 0; i < 20; i++) {
+  tmpArr.push(tmpItem);
+}
+
 router.get('/', async (ctx) => {
   ctx.body = {
     Code: 0,
-    Data: [
-      {
-        id: 0,
-        title: '知乎'
-      }
-    ]
+    Data: tmpArr
   };
 });
 

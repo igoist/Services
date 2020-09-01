@@ -7,6 +7,7 @@ const writeFile = (fileName, data) => {
       if (err) {
         log(`write ${fileName} failed:`, err);
         resolve(false);
+        return;
       }
       console.log(`The file ${fileName} has been saved!`);
       resolve(true);
@@ -20,11 +21,25 @@ const readFile = (fileName, fileType) => {
       if (err) {
         log(`readFile ${fileName} failed: `, err);
         resolve(false);
+        return;
       }
       resolve(data);
     });
   });
 };
 
+const guaranteeDirExist = (dirName) => {
+  return new Promise((resolve) => {
+    if (!fs.existsSync(dirName)) {
+      fs.mkdirSync(dirName);
+      console.log(`The target dir ${dirName} did not exist, so create it.`);
+      resolve(0);
+      return;
+    }
+    resolve(1);
+  });
+};
+
 exports.readFile = readFile;
 exports.writeFile = writeFile;
+exports.guaranteeDirExist = guaranteeDirExist;

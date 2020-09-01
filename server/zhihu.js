@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 const path = require('path');
 const utils = require('./utils');
 
-const { readFile, writeFile } = utils.file;
+const { readFile, writeFile, guaranteeDirExist } = utils.file;
 
 let time;
 let tmpTS;
@@ -25,14 +25,17 @@ const handleDate = () => {
   return `${y}-${m}-${d}`;
 };
 
+const dirName = '../tmps';
+const dirName2 = '../data';
+
 let fileName;
 let fileName2;
 
 const updateTime = () => {
   time = new Date();
   tmpTS = +time;
-  fileName = path.resolve(__dirname, `../tmps/tmp-${tmpTS}.html`);
-  fileName2 = path.resolve(__dirname, `../data/data-${handleDate()}.json`);
+  fileName = path.resolve(__dirname, `${dirName}/tmp-${tmpTS}.html`);
+  fileName2 = path.resolve(__dirname, `${dirName2}/data-${handleDate()}.json`);
 };
 
 let getData = () => {
@@ -94,10 +97,14 @@ const handleFile = (fileName, resultName) => {
 const getZhihuData = async () => {
   let res = await getData();
 
+  await guaranteeDirExist(path.resolve(__dirname, dirName));
+
   let ifWriteSuccess = await writeFile(fileName, res);
   if (!ifWriteSuccess) {
     return false;
   }
+
+  await guaranteeDirExist(path.resolve(__dirname, dirName2));
 
   let ifHandleSuccess = await handleFile(fileName, fileName2);
   if (!ifHandleSuccess) {
@@ -112,7 +119,6 @@ const getZhihuDataForApi = async () => {
   updateTime();
 
   let fileData = await readFile(fileName2, 'utf8');
-
   if (!fileData) {
     let ifGet = await getZhihuData();
 
@@ -125,9 +131,6 @@ const getZhihuDataForApi = async () => {
 
   return JSON.parse(fileData);
 };
-
-// only for local test
-// getZhihuData();
 
 exports.getZhihuData = getZhihuData;
 exports.getZhihuDataForApi = getZhihuDataForApi;
