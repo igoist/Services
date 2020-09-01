@@ -4,6 +4,8 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const Cors = require('koa-cors');
 const zhihu = require('./zhihu');
+const renting = require('./renting');
+
 const app = new Koa();
 const router = new Router();
 const port = 6085;
@@ -25,9 +27,37 @@ router.get('/', async (ctx) => {
   };
 });
 
+/**
+ * 俺知道这仨可以用 params 组合到一起
+ * 但偏偏就要这样拆开来写！（嚣张.jpg）
+ */
 router.get('/api/v1/list/:id', async (ctx) => {
   let data = await zhihu.getZhihuDataForApi();
   // ctx.body = ctx.params;
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/list/:id/latest', async (ctx) => {
+  let data = await zhihu.getZhihuDataForApi(1);
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/list/:id/incognito', async (ctx) => {
+  let data = await zhihu.getZhihuDataForApi(2);
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/renting/:id', async (ctx) => {
+  let data = await renting.getRentingDataForApi();
   ctx.body = {
     Code: 0,
     list: data
