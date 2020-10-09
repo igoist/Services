@@ -1,9 +1,9 @@
 const path = require('path');
-const utils = require('./utils');
+const utils = require('../utils');
 
 const { readFile } = utils.file;
 
-let fileName = path.resolve(__dirname, `./renting.json`);
+let fileName = path.resolve(__dirname, `../../data/renting/renting.json`);
 
 const getRentingData = async () => {
   let fileData = await readFile(fileName, 'utf8');

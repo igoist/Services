@@ -1,11 +1,11 @@
 const log = console.log.bind(this);
 
-const request = require('request');
 const cheerio = require('cheerio');
 const path = require('path');
-const utils = require('./utils');
+const utils = require('../utils');
 
 const { readFile, writeFile, guaranteeDirExist } = utils.file;
+const { getBody } = utils.web;
 
 let time;
 let tmpTS;
@@ -25,8 +25,8 @@ const handleDate = () => {
   return `${y}-${m}-${d}`;
 };
 
-const dirName = '../tmps';
-const dirName2 = '../data';
+const dirName = '../../tmps';
+const dirName2 = '../../data/zhihu';
 
 let fileName;
 let fileName2;
@@ -36,29 +36,6 @@ const updateTime = () => {
   tmpTS = +time;
   fileName = path.resolve(__dirname, `${dirName}/tmp-${tmpTS}.html`);
   fileName2 = path.resolve(__dirname, `${dirName2}/data-${handleDate()}.json`);
-};
-
-const getData = () => {
-  let uri = 'https://www.zhihu.com/billboard';
-
-  return new Promise((resolve) => {
-    request(
-      {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36',
-          'Content-Type': 'text/html; charset=utf-8'
-        },
-        uri,
-        method: 'GET'
-      },
-      function (error, response, body) {
-        if (error) {
-          log('here error: ', error);
-        }
-        resolve(body);
-      }
-    );
-  });
 };
 
 const handleData = (data) => {
@@ -93,7 +70,8 @@ const handleFile = (fileName, resultName) => {
     // we should reset objs every time
     let objs = handleData(fileData);
 
-    let tmpFileName = resultName || 'data/test.json';
+    // let tmpFileName = resultName || 'data/test.json';
+    let tmpFileName = resultName;
 
     let res = await writeFile(tmpFileName, JSON.stringify(objs, null, 2));
     resolve(res);
@@ -104,7 +82,7 @@ const handleFile = (fileName, resultName) => {
  *
  */
 const getZhihuData = async (incognito = false) => {
-  let res = await getData();
+  let res = await getBody('https://www.zhihu.com/billboard');
 
   if (incognito) {
     let result = handleData(res);

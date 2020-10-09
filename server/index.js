@@ -3,8 +3,8 @@ const log = console.log.bind(this);
 const Koa = require('koa');
 const Router = require('koa-router');
 const Cors = require('koa-cors');
-const zhihu = require('./zhihu');
-const renting = require('./renting');
+const zhihu = require('./v1/zhihu');
+const renting = require('./v1/renting');
 
 const app = new Koa();
 const router = new Router();
