@@ -5,6 +5,7 @@ const Router = require('koa-router');
 const Cors = require('koa-cors');
 const zhihu = require('./v1/zhihu');
 const renting = require('./v1/renting');
+const v2ex = require('./v1/v2ex');
 
 const app = new Koa();
 const router = new Router();
@@ -58,6 +59,23 @@ router.get('/api/v1/list/:id/incognito', async (ctx) => {
 
 router.get('/api/v1/renting/:id', async (ctx) => {
   let data = await renting.getRentingDataForApi();
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/v2ex/nodes', async (ctx) => {
+  let data = await v2ex.getNodesDataForApi();
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/v2ex/node/:id', async (ctx) => {
+  let id = parseInt(ctx.params.id);
+  let data = await v2ex.getNodesDataForApi(id);
   ctx.body = {
     Code: 0,
     list: data
