@@ -113,7 +113,7 @@ const getZhihuData = async (incognito = false) => {
  * 1 - latest with storage
  * 2 - latest without storage
  */
-const getZhihuDataForApi = async (mode = 0) => {
+const getZhihuDataForAPI = async (mode = 0) => {
   if (mode === 2) {
     return await getZhihuData(true);
   }
@@ -143,10 +143,10 @@ const getZhihuDataForApi = async (mode = 0) => {
 };
 
 exports.getZhihuData = getZhihuData;
-exports.getZhihuDataForApi = getZhihuDataForApi;
+exports.getZhihuDataForAPI = getZhihuDataForAPI;
 
 // getZhihuData(true);
 // (async () => {
-//   let r = await getZhihuDataForApi(2);
+//   let r = await getZhihuDataForAPI(2);
 //   console.log(r);
 // })();

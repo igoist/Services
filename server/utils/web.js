@@ -13,7 +13,7 @@ const getBody = (uri) => {
       },
       function (error, response, body) {
         if (error) {
-          log('here error: ', error);
+          console.log('here error: ', error);
         }
         resolve(body);
       }

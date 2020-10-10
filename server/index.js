@@ -33,7 +33,7 @@ router.get('/', async (ctx) => {
  * 但偏偏就要这样拆开来写！（嚣张.jpg）
  */
 router.get('/api/v1/list/:id', async (ctx) => {
-  let data = await zhihu.getZhihuDataForApi();
+  let data = await zhihu.getZhihuDataForAPI();
   // ctx.body = ctx.params;
   ctx.body = {
     Code: 0,
@@ -42,7 +42,7 @@ router.get('/api/v1/list/:id', async (ctx) => {
 });
 
 router.get('/api/v1/list/:id/latest', async (ctx) => {
-  let data = await zhihu.getZhihuDataForApi(1);
+  let data = await zhihu.getZhihuDataForAPI(1);
   ctx.body = {
     Code: 0,
     list: data
@@ -50,7 +50,7 @@ router.get('/api/v1/list/:id/latest', async (ctx) => {
 });
 
 router.get('/api/v1/list/:id/incognito', async (ctx) => {
-  let data = await zhihu.getZhihuDataForApi(2);
+  let data = await zhihu.getZhihuDataForAPI(2);
   ctx.body = {
     Code: 0,
     list: data
@@ -58,7 +58,7 @@ router.get('/api/v1/list/:id/incognito', async (ctx) => {
 });
 
 router.get('/api/v1/renting/:id', async (ctx) => {
-  let data = await renting.getRentingDataForApi();
+  let data = await renting.getRentingDataForAPI();
   ctx.body = {
     Code: 0,
     list: data
@@ -66,7 +66,7 @@ router.get('/api/v1/renting/:id', async (ctx) => {
 });
 
 router.get('/api/v1/v2ex/nodes', async (ctx) => {
-  let data = await v2ex.getNodesDataForApi();
+  let data = await v2ex.getNodesDataForAPI();
   ctx.body = {
     Code: 0,
     list: data
@@ -75,7 +75,15 @@ router.get('/api/v1/v2ex/nodes', async (ctx) => {
 
 router.get('/api/v1/v2ex/node/:id', async (ctx) => {
   let id = parseInt(ctx.params.id);
-  let data = await v2ex.getNodesDataForApi(id);
+  let data = await v2ex.getNodesDataForAPI(id);
+  ctx.body = {
+    Code: 0,
+    list: data
+  };
+});
+
+router.get('/api/v1/v2ex/hot', async (ctx) => {
+  let data = await v2ex.getHotDataForAPI();
   ctx.body = {
     Code: 0,
     list: data
