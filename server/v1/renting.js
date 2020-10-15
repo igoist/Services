@@ -12,8 +12,12 @@ const getRentingData = async () => {
   return JSON.parse(fileData);
 };
 
-const getRentingDataForAPI = async () => {
-  return await getRentingData();
+exports.getRentingDataForAPI = () => {
+  return async (ctx) => {
+    let data = await getRentingData();
+    ctx.body = {
+      Code: 0,
+      list: data
+    };
+  };
 };
-
-exports.getRentingDataForAPI = getRentingDataForAPI;

@@ -42,17 +42,28 @@ const handleNodeData = (body) => {
   return handleData(body, '#TopicsNode .cell .item_title .topic-link');
 };
 
-const getNode = async (id) => {
+const getNode = async (id, page) => {
   if (originalData === undefined || id < 1) {
     return null;
   }
 
   // 需要进行 - 1 处理
-  let url = originalData[id - 1].url;
+  let url = originalData[id - 1].url + `?page=${page}`;
 
   let res = await getBody(url);
 
   return handleNodeData(res);
+
+  // mock
+  // let arr = [];
+  // for (let i = (page - 1) * 20; i < page * 20; i++) {
+  //   arr.push({
+  //     title: `Mock title - ${i}`,
+  //     link: ''
+  //   });
+  // }
+
+  // return arr;
 };
 
 const handleHotData = (body) => {
@@ -71,17 +82,64 @@ const getHotDataForAPI = async () => {
  * node id = 0 is not exist
  * so use as default for case all
  */
-const getNodesDataForAPI = async (id = 0) => {
-  if (id === 0) {
+const getNodesDataForAPI = async (args) => {
+  const { id, page } = args || {};
+
+  if (id === 0 || id === undefined) {
     return await getNodesData();
   } else {
-    return await getNode(id);
+    return await getNode(id, page);
   }
 };
 
 exports.getNodesDataForAPI = getNodesDataForAPI;
 exports.getHotDataForAPI = getHotDataForAPI;
 
+/**
+ * 0: /api/v1/v2ex/nodes
+ * 1: /api/v1/v2ex/node/:id
+ * 2: /api/v1/v2ex/hot
+ */
+exports.getDataForAPI = (mode) => {
+  if (mode === 0) {
+    return async (ctx) => {
+      let data = await getNodesDataForAPI({});
+      ctx.body = {
+        Code: 0,
+        list: data
+      };
+    };
+  }
+  if (mode === 1) {
+    return async (ctx) => {
+      let id = parseInt(ctx.params.id);
+      let page = 1;
+
+      if (ctx.query.page !== undefined) {
+        page = parseInt(ctx.query.page);
+      }
+
+      let data = await getNodesDataForAPI({
+        id,
+        page
+      });
+
+      ctx.body = {
+        Code: 0,
+        list: data
+      };
+    };
+  }
+  if (mode === 2) {
+    return async (ctx) => {
+      let data = await getHotDataForAPI();
+      ctx.body = {
+        Code: 0,
+        list: data
+      };
+    };
+  }
+};
 /**
  * I: initial
  * T: test

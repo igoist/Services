@@ -112,6 +112,7 @@ const getZhihuData = async (incognito = false) => {
  * 0 - the old, with cache
  * 1 - latest with storage
  * 2 - latest without storage
+ * 3 - answer list
  */
 const getZhihuDataForAPI = async (mode = 0) => {
   if (mode === 2) {
@@ -143,7 +144,15 @@ const getZhihuDataForAPI = async (mode = 0) => {
 };
 
 exports.getZhihuData = getZhihuData;
-exports.getZhihuDataForAPI = getZhihuDataForAPI;
+exports.getZhihuDataForAPI = (mode) => {
+  return async (ctx) => {
+    let data = await getZhihuDataForAPI(mode);
+    ctx.body = {
+      Code: 0,
+      list: data
+    };
+  };
+};
 
 // getZhihuData(true);
 // (async () => {
