@@ -3,6 +3,7 @@ const log = console.log.bind(this);
 const cheerio = require('cheerio');
 const path = require('path');
 const utils = require('../utils');
+const db = require('../db');
 
 const { readFile, writeFile, guaranteeDirExist } = utils.file;
 const { getBody } = utils.web;
