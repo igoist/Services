@@ -88,6 +88,33 @@ const getZhihuData = async (incognito = false) => {
   if (incognito) {
     let result = handleData(res);
 
+    if (db.sequelizeInst) {
+      const M = db.sequelizeInst.model('zhihuItem');
+
+      try {
+        for (let i = 0; i < result.length; i++) {
+          let item = result[i];
+          // console.log('getZhihuData: ', i);
+
+          const [_item, created] = await M.findOrCreate({
+            where: { title: item.title },
+            defaults: {
+              ...item
+            }
+          });
+
+          // if (created) {
+          //   console.log(item.title);
+          //   break;
+          // }
+        }
+      } catch (err) {
+        log('getZhihuData findOrCreate: ', err);
+      } finally {
+        // db.sequelizeInst.close();
+      }
+    }
+
     return result;
   }
 

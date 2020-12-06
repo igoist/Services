@@ -1,12 +1,9 @@
 const config = require('./config');
 const Sequelize = require('sequelize');
-// const Billboard = require('./models/billboard');
-
-// const zhihu = require('./v1/zhihu');
 
 let sequelizeInst = null;
 
-const modelTable = ['billboard', 'item'];
+const modelTable = ['item', 'zhihuItem'];
 
 const loadModel = (sequelize) => {
   return (name) => {
@@ -20,7 +17,7 @@ const loadModel = (sequelize) => {
 
     if (config.env !== 'production') {
       // return model.sync({ alter: true });
-      // return model.sync();
+      return model.sync();
     }
   };
 };
@@ -30,80 +27,25 @@ const loadModels = (sequelize) => {
 };
 
 // init Sequelize & define models
-const init = (config) => {
+const init = () => {
   const sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     dialect: 'mysql',
-    // logging: false
-    timezone: '+08:00'
+    timezone: '+08:00',
     // pool: {
     //   max: 5,
     //   min: 0,
     //   idle: 30000
     // }
+    logging: false
   });
 
   sequelizeInst = sequelize;
 
-  exports.sequelize = sequelize;
+  exports.sequelizeInst = sequelizeInst;
 
   return loadModels(sequelize);
 };
 
-const test = async () => {
-  const saveData = () => {
-    return new Promise(async (resolve) => {
-      // let data = await zhihu.getZhihuDataForApi();
-      // console.log(typeof data, data.length);
-      // for (let i = 0; i < data.length; i++) {
-      //   // console.log(data[i].title);
-      //   let r = await Item.create({
-      //     title: data[i].title,
-      //     excerpt: data[i].excerpt,
-      //     link: data[i].link,
-      //     img: data[i].img
-      //   });
-      //   console.log('created: ' + JSON.stringify(r));
-      // }
-
-      // await Billboard.create({
-      //   list: JSON.stringify(data)
-      // });
-
-      resolve(true);
-    });
-  };
-
-  try {
-    let x = await init(config);
-
-    // let r = sequelizeInst.model('billboard');
-    let Item = sequelizeInst.model('item');
-
-    await Item.update(
-      { createdAt: '2020-12-04 21:49:00' },
-      {
-        where: {
-          id: {
-            [Sequelize.Op.lt]: 200
-          }
-        }
-      }
-    );
-
-    await sequelizeInst.authenticate();
-
-    console.log('Connection has been established successfully.');
-
-    // findAll(r[0]);
-    // console.log(Object.keys(r[0]), r[0].findAll, typeof r[0].findAll);
-    // console.log(JSON.stringify(r[0], null, 2));
-    // console.log(Object.keys(r[0]), r[0].findAll, typeof r[0].findAll);
-  } finally {
-    // sequelize.close();
-  }
-};
-
-test();
-
 exports.init = init;
+// exports.sequelizeInst = sequelizeInst; // 無駄

@@ -5,7 +5,8 @@ const zhihu = require('./v1/zhihu');
 
 let sequelizeInst = null;
 
-const modelTable = ['item'];
+// const modelTable = ['item'];
+const modelTable = ['item', 'zhihuItem'];
 
 const loadModel = (sequelize) => {
   return (name) => {
@@ -19,7 +20,7 @@ const loadModel = (sequelize) => {
 
     if (config.env !== 'production') {
       // return model.sync({ alter: true });
-      // return model.sync();
+      return model.sync();
     }
   };
 };
@@ -29,7 +30,7 @@ const loadModels = (sequelize) => {
 };
 
 // init Sequelize & define models
-const init = (config) => {
+const init = () => {
   const sequelize = new Sequelize(config.database, config.username, config.password, {
     host: config.host,
     dialect: 'mysql',
@@ -38,7 +39,7 @@ const init = (config) => {
 
   sequelizeInst = sequelize;
 
-  exports.sequelize = sequelize;
+  exports.sequelizeInst = sequelizeInst;
 
   return loadModels(sequelize);
 };
@@ -71,20 +72,48 @@ const testMethods = (Item) => {
   return { findOne, updateSingleOne };
 };
 
+const migrateZhihuItems = (MM) => {
+  let Item = sequelizeInst.model('item');
+  // const { findOne } = testMethods(Item);
+  let x = await Item.findAll();
+
+
+  for (let i = 0; i < x.length; i++) {
+    let item = x[i].dataValues;
+    delete item.id;
+
+    const [a, created] = await MM.findOrCreate({
+      where: { title: item.title },
+      defaults: {
+        ...item
+      }
+    });
+    if (created) {
+      console.log(`create${i} - ${item.title}`);
+    } else {
+      console.log(`read${i} - ${item.title}`);
+    }
+  }
+  return;
+}
+
 const test = async () => {
   try {
     await init(config);
 
-    let Item = sequelizeInst.model('item');
 
-    const { findOne } = testMethods(Item);
+    let MM = sequelizeInst.model('zhihuItem');
+    // migrateZhihuItems(MM);
+
+    const { findOne } = testMethods(MM);
 
     console.time('dbTest');
     const data = await zhihu.getZhihuData(true);
     // await findOne('如何评价《英雄联盟》新英雄「含羞蓓蕾」莉莉娅？');
     // console.log(data.slice(0, 2));
 
-    const tmp = data.slice(0, 2);
+    const tmp = data.slice(0, 5);
+    let f = false;
     for (let i = 0; i < tmp.length; i++) {
       let item = tmp[i];
       // let r = await findOne(item.title);
@@ -92,8 +121,12 @@ const test = async () => {
       //   console.log('enter ', i, r);
 
       // }
+      if (f) {
+        console.log(`${i} - ${item.title}`);
+        continue;
+      }
 
-      const [a, b] = await Item.findOrCreate({
+      const [a, b] = await MM.findOrCreate({
         where: { title: item.title },
         defaults: {
           ...item
@@ -101,6 +134,10 @@ const test = async () => {
       });
 
       console.log(`${i}: `, a, b);
+      if (b) {
+        // break;
+        f = true;
+      }
     }
 
     console.timeEnd('dbTest');

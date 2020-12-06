@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-var Item = {
+var ZhihuItem = {
   title: Sequelize.STRING(100),
   link: Sequelize.STRING(300),
   img: Sequelize.STRING(100),
@@ -14,4 +14,4 @@ var Item = {
   }
 };
 
-module.exports = Item;
+module.exports = ZhihuItem;
