@@ -1,15 +1,19 @@
-const Sequelize = require('sequelize');
+const { S, T } = require('../ModelType');
+
+/**
+ * 可能要废弃？
+ */
 
 var Item = {
-  title: Sequelize.STRING(100),
-  link: Sequelize.STRING(300),
-  img: Sequelize.STRING(100),
+  title: S(100),
+  link: S(300),
+  img: S(100),
   excerpt: {
-    type: Sequelize.TEXT,
+    type: T,
     allowNull: true
   },
   extra: {
-    type: Sequelize.TEXT,
+    type: T,
     allowNull: true
   }
 };

@@ -3,14 +3,15 @@ const Sequelize = require('sequelize');
 
 let sequelizeInst = null;
 
-const modelTable = ['item', 'zhihuItem'];
+const modelTable = ['item', 'zhihuItem', 'linkItem', 'linkType'];
 
 const loadModel = (sequelize) => {
   return (name) => {
     const modelConf = require(`./models/${name}`);
 
     const model = sequelize.define(name, modelConf, {
-      timestamps: true
+      timestamps: true,
+      paranoid: true
     });
 
     console.log('model: ', typeof model);
