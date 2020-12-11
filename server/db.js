@@ -14,8 +14,6 @@ const loadModel = (sequelize) => {
       paranoid: true
     });
 
-    console.log('model: ', typeof model);
-
     if (config.env !== 'production') {
       // return model.sync({ alter: true });
       return model.sync();

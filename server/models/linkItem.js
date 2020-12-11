@@ -20,7 +20,7 @@ var LinkItem = {
   },
   typeIds: {
     type: T,
-    defaultValue: '0',
+    defaultValue: '1',
     get() {
       return this.getDataValue('typeIds').split(',');
     },
