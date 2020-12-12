@@ -1,6 +1,29 @@
 const db = require('../db');
 
-exports.registerArr = [
+const LinkTypeArr = [
+  {
+    method: 'get',
+    api: '/api/v1/item/type/list',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/type/list: ', ctx.request.body);
+        let Code = 0;
+        let list = [];
+
+        if (db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkType');
+
+          list = await MM.findAll();
+        }
+
+        ctx.body = {
+          Code,
+          list
+        };
+      };
+    }
+  },
   {
     method: 'post',
     api: '/api/v1/item/type/add',
@@ -13,14 +36,14 @@ exports.registerArr = [
 
         if (name !== undefined && db.sequelizeInst) {
           const se = db.sequelizeInst;
-          const LinkType = se.model('linkType');
+          const MM = se.model('linkType');
 
           let defaults = {
             name,
             sort
           };
 
-          const [item, created] = await LinkType.findOrCreate({
+          const [item, created] = await MM.findOrCreate({
             where: { name },
             defaults
           });
@@ -35,6 +58,32 @@ exports.registerArr = [
         ctx.body = {
           Code,
           msg
+        };
+      };
+    }
+  }
+];
+
+const LinkArr = [
+  {
+    method: 'get',
+    api: '/api/v1/item/list',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/list: ', ctx.request.body);
+        let Code = 0;
+        let list = [];
+
+        if (db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkItem');
+
+          list = await MM.findAll();
+        }
+
+        ctx.body = {
+          Code,
+          list
         };
       };
     }
@@ -53,7 +102,7 @@ exports.registerArr = [
         console.log('/api/v1/item/add: ', b);
         if (title && db.sequelizeInst) {
           const se = db.sequelizeInst;
-          const M = se.model('linkItem');
+          const MM = se.model('linkItem');
 
           let defaults = {
             title,
@@ -66,7 +115,7 @@ exports.registerArr = [
             defaults.createdAt = createdAt;
           }
 
-          const [item, created] = await M.findOrCreate({
+          const [item, created] = await MM.findOrCreate({
             where: { title },
             defaults
           });
@@ -86,3 +135,5 @@ exports.registerArr = [
     }
   }
 ];
+
+exports.registerArr = [...LinkTypeArr, ...LinkArr];
