@@ -3,7 +3,7 @@ const db = require('../db');
 const LinkTypeArr = [
   {
     method: 'get',
-    api: '/api/v1/item/type/list',
+    api: '/api/v1/item/type/',
     f: () => {
       return async (ctx) => {
         console.log('/api/v1/item/type/list: ', ctx.request.body);
@@ -26,7 +26,7 @@ const LinkTypeArr = [
   },
   {
     method: 'post',
-    api: '/api/v1/item/type/add',
+    api: '/api/v1/item/type/',
     f: () => {
       return async (ctx) => {
         const { name, sort = 0 } = ctx.request.body;
@@ -61,13 +61,53 @@ const LinkTypeArr = [
         };
       };
     }
+  },
+  {
+    method: 'delete',
+    api: '/api/v1/item/type/:id/',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/type/delete: ', ctx.params);
+        let { id } = ctx.params;
+
+        let Code = 0;
+        let msg = '';
+
+        id = parseInt(id);
+        if (id !== NaN && db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkType');
+
+          const item = await MM.findByPk(id);
+
+          if (item !== null) {
+            msg = `id ${id} found! So delete it`;
+            let tmp = await MM.destroy({
+              where: { id }
+            });
+
+            // Q: why tmp is 1 ?
+            // console.log('tmp', tmp);
+          } else {
+            msg = `id ${id} not found...`;
+            Code = 666;
+          }
+          console.log(msg);
+        }
+
+        ctx.body = {
+          Code,
+          msg
+        };
+      };
+    }
   }
 ];
 
 const LinkArr = [
   {
     method: 'get',
-    api: '/api/v1/item/list',
+    api: '/api/v1/item/',
     f: () => {
       return async (ctx) => {
         console.log('/api/v1/item/list: ', ctx.request.body);
@@ -90,7 +130,7 @@ const LinkArr = [
   },
   {
     method: 'post',
-    api: '/api/v1/item/add',
+    api: '/api/v1/item/',
     f: () => {
       return async (ctx) => {
         const b = ctx.request.body;
