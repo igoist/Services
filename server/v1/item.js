@@ -1,5 +1,8 @@
 const db = require('../db');
 
+/**
+ * get, post, put, delete
+ */
 const LinkTypeArr = [
   {
     method: 'get',
@@ -63,6 +66,38 @@ const LinkTypeArr = [
     }
   },
   {
+    method: 'put',
+    api: '/api/v1/item/type/',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/type/list: ', ctx.request.body);
+        let { id } = ctx.request.body;
+
+        let Code = 0;
+        let msg = '';
+
+        id = parseInt(id);
+
+        if (id !== NaN && db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkType');
+
+          let old = await MM.findByPk(id);
+          if (old) {
+            msg = 'find & update';
+          }
+          console.log('old: ', old);
+          console.log('new: ', ctx.request.body);
+        }
+
+        ctx.body = {
+          Code,
+          msg
+        };
+      };
+    }
+  },
+  {
     method: 'delete',
     api: '/api/v1/item/type/:id/',
     f: () => {
@@ -74,6 +109,7 @@ const LinkTypeArr = [
         let msg = '';
 
         id = parseInt(id);
+
         if (id !== NaN && db.sequelizeInst) {
           const se = db.sequelizeInst;
           const MM = se.model('linkType');
@@ -165,6 +201,43 @@ const LinkArr = [
           } else {
             msg = 'already exist';
           }
+        }
+
+        ctx.body = {
+          Code,
+          msg
+        };
+      };
+    }
+  },
+  {
+    method: 'delete',
+    api: '/api/v1/item/:id/',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/delete: ', ctx.params);
+        let { id } = ctx.params;
+
+        let Code = 0;
+        let msg = '';
+
+        id = parseInt(id);
+        if (id !== NaN && db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkItem');
+
+          const item = await MM.findByPk(id);
+
+          if (item !== null) {
+            msg = `id ${id} found! So delete it`;
+            await MM.destroy({
+              where: { id }
+            });
+          } else {
+            msg = `id ${id} not found...`;
+            Code = 666;
+          }
+          console.log(msg);
         }
 
         ctx.body = {
