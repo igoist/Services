@@ -67,11 +67,11 @@ const LinkTypeArr = [
   },
   {
     method: 'put',
-    api: '/api/v1/item/type/',
+    api: '/api/v1/item/type/:id',
     f: () => {
       return async (ctx) => {
-        console.log('/api/v1/item/type/list: ', ctx.request.body);
-        let { id } = ctx.request.body;
+        let { id } = ctx.params;
+        console.log(`/api/v1/item/type/${id}: `, ctx.request.body);
 
         let Code = 0;
         let msg = '';
@@ -201,6 +201,38 @@ const LinkArr = [
           } else {
             msg = 'already exist';
           }
+        }
+
+        ctx.body = {
+          Code,
+          msg
+        };
+      };
+    }
+  },
+  {
+    method: 'put',
+    api: '/api/v1/item/',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/list: ', ctx.request.body);
+        let { id } = ctx.request.body;
+
+        let Code = 0;
+        let msg = '';
+
+        id = parseInt(id);
+
+        if (id !== NaN && db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('linkItem');
+
+          let old = await MM.findByPk(id);
+          if (old) {
+            msg = 'find & update';
+          }
+          console.log('old: ', old);
+          console.log('new: ', ctx.request.body);
         }
 
         ctx.body = {
