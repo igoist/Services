@@ -85,8 +85,16 @@ const LinkTypeArr = [
           let old = await MM.findByPk(id);
           if (old) {
             msg = 'find & update';
+            MM.update(
+              { ...ctx.request.body },
+              {
+                where: {
+                  id
+                }
+              }
+            );
           }
-          console.log('old: ', old);
+          console.log('old: ', old && old.title);
           console.log('new: ', ctx.request.body);
         }
 
@@ -212,11 +220,11 @@ const LinkArr = [
   },
   {
     method: 'put',
-    api: '/api/v1/item/',
+    api: '/api/v1/item/:id',
     f: () => {
       return async (ctx) => {
+        let { id } = ctx.params;
         console.log('/api/v1/item/list: ', ctx.request.body);
-        let { id } = ctx.request.body;
 
         let Code = 0;
         let msg = '';
@@ -229,9 +237,17 @@ const LinkArr = [
 
           let old = await MM.findByPk(id);
           if (old) {
+            MM.update(
+              { ...ctx.request.body },
+              {
+                where: {
+                  id
+                }
+              }
+            );
             msg = 'find & update';
           }
-          console.log('old: ', old);
+          console.log('old: ', old && old.title);
           console.log('new: ', ctx.request.body);
         }
 
