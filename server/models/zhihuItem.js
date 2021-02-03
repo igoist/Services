@@ -15,7 +15,7 @@ const { S, T } = require('../ModelType');
 var ZhihuItem = {
   title: S(100),
   link: S(300),
-  img: S(100),
+  img: S(260),
   excerpt: {
     type: T,
     allowNull: true

@@ -1,4 +1,6 @@
 const db = require('../db');
+const Sequelize = require('sequelize');
+const { Op } = Sequelize;
 
 /**
  * get, post, put, delete
@@ -94,7 +96,7 @@ const LinkTypeArr = [
               }
             );
           }
-          console.log('old: ', old && old.title);
+          console.log('old: ', old && old.name);
           console.log('new: ', ctx.request.body);
         }
 
@@ -297,4 +299,62 @@ const LinkArr = [
   }
 ];
 
-exports.registerArr = [...LinkTypeArr, ...LinkArr];
+const LinkZhihuArr = [
+  {
+    method: 'get',
+    api: '/api/v1/item/zhihu/',
+    f: () => {
+      return async (ctx) => {
+        console.log('/api/v1/item/zhihu/list: ', ctx.query);
+        let page = 1;
+        let limit = 10;
+
+        if (ctx.query.page !== undefined) {
+          page = parseInt(ctx.query.page);
+        }
+
+        if (ctx.query.limit !== undefined) {
+          limit = parseInt(ctx.query.limit);
+        }
+
+        let Code = 0;
+        let list = [];
+        let count = 0;
+
+        if (db.sequelizeInst) {
+          const se = db.sequelizeInst;
+          const MM = se.model('zhihuItem');
+
+          let where = {};
+
+          if (ctx.query.title !== undefined) {
+            where = {
+              title: {
+                [Op.like]: `%${ctx.query.title}%`
+              }
+            };
+          }
+
+          const clause = {
+            where,
+            offset: (page - 1) * limit,
+            limit
+          };
+
+          let result = await MM.findAndCountAll(clause);
+
+          count = result.count;
+          list = result.rows;
+        }
+
+        ctx.body = {
+          Code,
+          list,
+          count
+        };
+      };
+    }
+  }
+];
+
+exports.registerArr = [...LinkTypeArr, ...LinkArr, ...LinkZhihuArr];
