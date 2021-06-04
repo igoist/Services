@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 let sequelizeInst = null;
 
-const modelTable = ['item', 'zhihuItem', 'linkItem', 'linkType'];
+const modelTable = ['item', 'zhihuItem', 'historyItem', 'linkItem', 'linkType'];
 
 const loadModel = (sequelize) => {
   return (name) => {

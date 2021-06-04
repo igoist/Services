@@ -22,10 +22,16 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
     "koa": "^2.11.0",
+    "koa-body": "^4.2.0",
     "koa-cors": "0.0.16",
     "koa-router": "^8.0.8",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "mysql2": "^2.1.0",
     "request": "^2.88.2",
     "sequelize": "^6.3.0"
+  },
+  "devDependencies": {
+    "execa": "^4.0.3"
   }
 }

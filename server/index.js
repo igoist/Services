@@ -7,6 +7,7 @@ const renting = require('./v1/renting');
 const v2ex = require('./v1/v2ex');
 const file = require('./v1/file');
 const item = require('./v1/item');
+const history = require('./v1/history');
 const db = require('./db');
 
 const { info, intercept } = require('./middleware');
@@ -30,14 +31,17 @@ router.get('/', async (ctx) => {
  * v2ex
  */
 // const arr = [zhihu, renting, v2ex]
-const arr = [item];
+const arr = [item, history];
 for (let i = 0; i < arr.length; i++) {
   let registerArr = arr[i].registerArr;
   for (let j = 0; j < registerArr.length; j++) {
     const r = registerArr[j];
+    console.log(`${j}, ${r.method} - ${r.api}`);
     router[r.method](r.api, r.f()); // f 必须在这边调用
   }
 }
+
+// list will migrate to /api/v1/なになに/何々/list
 
 router.get('/api/v1/list/:id', zhihu.getZhihuDataForAPI());
 

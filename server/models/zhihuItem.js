@@ -1,3 +1,5 @@
+const _ = require('loadsh');
+const LinkItem = require('./linkItem');
 const { S, T } = require('../ModelType');
 
 /**
@@ -12,14 +14,11 @@ const { S, T } = require('../ModelType');
  * typeId 这里不需要
  */
 
-var ZhihuItem = {
-  title: S(100),
-  link: S(300),
+let ZhihuItem = _.cloneDeep(LinkItem);
+
+ZhihuItem = {
+  ...ZhihuItem,
   img: S(260),
-  excerpt: {
-    type: T,
-    allowNull: true
-  },
   extra: {
     type: T,
     allowNull: true
